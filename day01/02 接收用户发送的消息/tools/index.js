@@ -1,36 +1,37 @@
 const {parseString}=require("xml2js")
-
-
 module.exports={
-    getUserData(req){
-        return new Promise( resolve=>{
-             let result=""
-             req.on("data",data=>{
-                // Buffer数据
-                result+=data.toString()
-             })
-             req.on("end",()=>{
-                 resolve(result)
-             })
+   getUserData(req){
+       return new Promise((resolve,reject)=>{
+              let userData=""
+              req.on("data",data=>{ // Buffer数据
+                  userData+=data.toString()
+              })
+              req.on("end",err=>{
+                    if(!err){
+                       resolve(userData)
+                    }else{
+                       reject(err)
+                    }
+              })
+       })
+   },
+   xmlParse(xml){
+        return new Promise((resolve,reject)=>{
+              parseString(xml,{trim:true},(err,result)=>{
+                  if(!err){
+                     resolve(result)
+                  }else{
+                     reject(err)
+                  }
+              })
         })
-    },
-    parserXml(xml){
-      return new Promise((res,rej)=>{
-          parseString(xml,{trim:true},(err,result)=>{
-              if(!err){
-                 res(result)
-              }else{
-                 rej(err)
-              }
-          })
-      })
-    },
-    formatMessage({xml}){
-         let obj={}
-         for( let key in xml){
-             obj[key]=xml[key][0]
-         }
-         return obj
-    }
-
+   },
+   formatMessage({xml}){
+       let result={}
+       for(let key in xml){
+           result[key]=xml[key][0]
+       }
+       return result
+   }
 }
+
