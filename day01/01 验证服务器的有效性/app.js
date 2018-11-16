@@ -27,6 +27,9 @@ app.use((req,res,next)=>{
         timestamp: '1542368623', 时间戳
         nonce: '527926167' }  微信后台生成随机数字
 
+        微信签名 signature 是 timestamp nonce token 按大小 字母编号排序后 拼接成一个字符串
+        然后通过sha1 加密得来的结果  所以判断发送请求的服务器是否是微信服务器
+        只需要验证 他们三个加密的结果 与signature是否相等即可
      * */
      const config={
        appID:"wxf34878c2dbeb98c0",
