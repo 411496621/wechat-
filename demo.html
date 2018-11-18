@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script type="text/javascript">
+  (async function (){
+   let a=await  new Promise((res,rej)=>{
+         setTimeout(function () {
+             console.log("定时器执行了")
+             res(1)
+         },1000)
+    }).then(data=>{
+        return [1,2,3]
+    })
+    console.log(a)
+
+
+  })()
+</script>
+</html>
