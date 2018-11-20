@@ -30,6 +30,7 @@ app.get("/search",async (req,res)=>{
     console.log(noncestr,"noncestr")
     console.log(timestamp,"timestamp")
 */
+    console.log("1111")
     res.render("search",{
       signature,
       appID,

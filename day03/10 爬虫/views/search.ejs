@@ -14,7 +14,9 @@
 <body>
 <h2>语音识别功能</h2>
 <button id="btn">点击开始录音</button>
+<ul id="list"></ul>
 </body>
+
 <script type="text/javascript" src="https://cdn.bootcss.com/zepto/1.0rc1/zepto.min.js"></script>
 <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 <script>
@@ -23,8 +25,8 @@
            debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
            appId: '<%= appID %>', // 必填，公众号的唯一标识
            timestamp: '<%= timestamp %>', // 必填，生成签名的时间戳
-           nonceStr: '<%= noncestr %>', // 必填，生成签名的随机串
-           signature: '<%=signature  %>',// 必填，签名
+           nonceStr:'<%= noncestr %>', // 必填，生成签名的随机串
+           signature: "<%= signature %>",// 必填，签名
            jsApiList: [
              "updateAppMessageShareData",
              "updateTimelineShareData",
@@ -40,19 +42,54 @@
                       wx.startRecord()
                       isRecord=!isRecord
                    }else{
-                       wx.stopRecord({
-                         success: function (res) {
-                           var localId = res.localId;
-                           wx.translateVoice({
-                             localId: '', // 需要识别的音频的本地Id，由录音相关接口获得
-                             isShowProgressTips: 1, // 默认为1，显示进度提示
-                             success: function (res) {
-                               alert(res.translateResult); // 语音识别的结果
-                             }
-                           });
-                           isRecord=!isRecord
-                         }
-                       });
+                     wx.stopRecord({
+                       success: function (res) {
+                         var localId = res.localId;
+                         wx.translateVoice({
+                           localId:localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                           isShowProgressTips: 1, // 默认为1，显示进度提示
+                           success: function (res) {
+                             //alert(res.translateResult); // 语音识别的结果
+                             // 设置发送请求的url
+                             const url=`http://api.douban.com/v2/movie/search?q=${res.translateResult}&count=5&callback=?`
+                             $.getJSON(url,function ({subjects}) {
+                                 let html=''
+                                 subjects.forEach(function (item) {
+                                      html=`<li>
+                                                <h3>${item.title}</h3>
+                                                <img src="${item.images.small}">
+                                                <p>官方评分:${item.rating.average}</p>
+                                            </li>`
+                                 })
+                                 $("#list").html(html)
+                                 wx.updateAppMessageShareData({
+                                   title: `${subjects[0].title}`, // 分享标题
+                                   desc: `电影评分${subjects.rating.average}`, // 分享描述
+                                   link: `${subjects[0].alt}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                                   imgUrl:subjects[0].images.small, // 分享图标
+                                   success: function () {
+                                     // 设置成功
+                                     alert("点击右上角三点可以分享给朋友或QQ")
+                                   }
+                                 })
+
+                                 wx.updateTimelineShareData({
+                                   title: subjects[0].title, // 分享标题
+                                   link: subjects[0].alt, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                                   imgUrl: subjects[0].images.small, // 分享图标
+                                   success: function () {
+                                     // 设置成功
+                                     alert("点击右上角三点可以分享到朋友圈或QQ空间")
+                                   }
+                                 })
+
+                             })
+
+                           }
+                         })
+                         isRecord=!isRecord
+                       }
+                     })
                    }
               })
          })
