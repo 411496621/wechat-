@@ -21,16 +21,21 @@ app.get("/search",async (req,res)=>{
     const {ticket} = await wechat.fetchTicket()
     const noncestr = Math.random().toString().split(".")[1]
     const timestamp = Math.floor(Date.now()/1000)
-    const str = [`ticket=${ticket}`,`noncestr=${noncestr}`,`timestamp=${timestamp}`,`url=${url}/search`].sort().join("&")
+    const str = [`jsapi_ticket=${ticket}`,`noncestr=${noncestr}`,`timestamp=${timestamp}`,`url=${url}/search`].sort().join("&")
     const signature=sha1(str)
-
+/*
+    console.log("-------")
+    console.log(ticket,"ticket")
+    console.log(signature,"signature")
+    console.log(noncestr,"noncestr")
+    console.log(timestamp,"timestamp")
+*/
     res.render("search",{
       signature,
       appID,
       noncestr,
       timestamp
     })
-
 })
 
 app.use(handleRequest())

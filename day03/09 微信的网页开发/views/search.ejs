@@ -40,19 +40,19 @@
                       wx.startRecord()
                       isRecord=!isRecord
                    }else{
-                       wx.stopRecord({
-                         success: function (res) {
-                           var localId = res.localId;
-                           wx.translateVoice({
-                             localId: '', // 需要识别的音频的本地Id，由录音相关接口获得
-                             isShowProgressTips: 1, // 默认为1，显示进度提示
-                             success: function (res) {
-                               alert(res.translateResult); // 语音识别的结果
-                             }
-                           });
-                           isRecord=!isRecord
-                         }
-                       });
+                     wx.stopRecord({
+                       success: function (res) {
+                         var localId = res.localId;
+                         wx.translateVoice({
+                           localId:localId, // 需要识别的音频的本地Id，由录音相关接口获得
+                           isShowProgressTips: 1, // 默认为1，显示进度提示
+                           success: function (res) {
+                             alert(res.translateResult); // 语音识别的结果
+                           }
+                         });
+                         isRecord=!isRecord
+                       }
+                     });
                    }
               })
          })
